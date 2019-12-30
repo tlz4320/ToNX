@@ -14,5 +14,5 @@ public @interface Arg {
     boolean hasArg();
     String longarg() default "";
     String val() default "";
-    String summary() default "";
+    String description() default "";
 }

@@ -1,5 +1,7 @@
 package cn.tobinsc.ToNX.util;
 
+import cn.tobinsc.ToNX.Exception.ArgUnSupportException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -27,21 +29,30 @@ public final class ReflectionUtil {
         return result;
     }
     // only support int double float
-    public static Object cast(Class<?> cls, String val) {
+    public static Object cast(Class<?> cls, String val) throws ArgUnSupportException {
         if(val == null)
             val = "";
         String type = cls.getTypeName();
         if (type.equals("java.lang.String"))
             return val;
+        String val2;
         if (val.length() == 0)
-            val = "0";
-        if (type.equals("java.lang.Integer") || type.equals("int"))
-            return Integer.parseInt(val);
-        if (type.equals("java.lang.Double") || type.equals("double"))
-            return Double.parseDouble(val);
-        if (type.equals("java.lang.Float") || type.equals("float"))
-            return Float.parseFloat(val);
-        return null;
+            val2 = "0";
+        else
+            val2 = val;
+        try {
+            if (type.equals("java.lang.Integer") || type.equals("int"))
+                return Integer.parseInt(val2);
+            if (type.equals("java.lang.Double") || type.equals("double"))
+                return Double.parseDouble(val2);
+            if (type.equals("java.lang.Float") || type.equals("float"))
+                return Float.parseFloat(val2);
+            if (type.equals("java.lang.Boolean"))
+                return Boolean.parseBoolean(val2);
+        }catch (Exception e){
+            throw new ArgUnSupportException(cls, val);
+        }
+        throw new ArgUnSupportException(cls);
     }
     public static void setField(Object obj,Field field,Object value){
         try{
