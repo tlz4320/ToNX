@@ -1,4 +1,4 @@
-package cn.tobinsc.ToNX.util;
+package cn.treeh.ToNX.util;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

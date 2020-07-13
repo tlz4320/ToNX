@@ -1,5 +1,7 @@
-package cn.tobinsc.ToNX.util;
+package cn.treeh.ToNX.util;
 
+import cn.treeh.ToNX.Annotation.Arg;
+import cn.treeh.ToNX.Annotation.DBField;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
@@ -13,12 +15,15 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+
+import org.sqlite.JDBC;
+
+import javax.swing.*;
 
 public class DataBaseUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseUtil.class);
@@ -162,6 +167,48 @@ public class DataBaseUtil {
         sql+=colums+"VALUES"+values;
         Object[] params = fieldMap.values().toArray();
         return executeUpdate(sql,params) == 1;
+    }
+
+    public static boolean insertEntity(Object entity) {
+        HashMap<String, Object> fieldMap = new HashMap<>();
+        Field[] fields = entity.getClass().getFields();
+        DBField annotation;
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBField.class)) {
+                annotation = field.getAnnotation(DBField.class);
+                try {
+                    if (annotation.field().equals(""))
+                        fieldMap.put(field.getName(), field.get(entity));
+                    else
+                        fieldMap.put(annotation.field(), field.get(entity));
+                } catch (IllegalAccessException e) {
+                    JOptionPane.showConfirmDialog(null,
+                            "奇怪的事情发生了1",
+                            "成功", JOptionPane.DEFAULT_OPTION);
+                    throw new RuntimeException("Field should be public");
+                }
+            }
+        }
+        return insertEntity(entity.getClass(), fieldMap);
+    }
+    public static boolean updateEntity(Object entity, long id){
+        HashMap<String, Object> fieldMap = new HashMap<>();
+        Field[] fields = entity.getClass().getFields();
+        DBField annotation;
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBField.class)) {
+                annotation = field.getAnnotation(DBField.class);
+                try {
+                    if (annotation.field().equals(""))
+                        fieldMap.put(field.getName(), field.get(entity));
+                    else
+                        fieldMap.put(annotation.field(), field.get(entity));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Field should be public");
+                }
+            }
+        }
+        return updateEntity(entity.getClass(), id, fieldMap);
     }
     public static <T> boolean updateEntity(Class<T> entityClass ,long id, Map<String,Object>fieldMap){
         if(CollectionUtil.isEmpty(fieldMap)){

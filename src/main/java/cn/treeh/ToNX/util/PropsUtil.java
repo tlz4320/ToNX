@@ -1,15 +1,38 @@
-package cn.tobinsc.ToNX.util;
+package cn.treeh.ToNX.util;
 
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * Created by Tobin on 2017/8/3.
  */
 public class PropsUtil {
+    public static void saveProps(Properties properties, String filename){
+
+        try {
+            FileWriter writer = new FileWriter(filename);
+            if(properties == null || properties.size() == 0) {
+                writer.flush();
+                writer.close();
+                return;
+            }
+            for(Map.Entry<Object, Object> e : properties.entrySet()){
+                String value = (String)e.getValue();
+                value = value.replaceAll("\\\\", "/");
+                writer.write(e.getKey() + " = " + value);
+            }
+            writer.flush();
+            writer.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     public static Properties loadProps(String filename){
         Properties properties = null;
         InputStream is = null;
@@ -61,4 +84,5 @@ public class PropsUtil {
         }
         return value;
     }
+
 }

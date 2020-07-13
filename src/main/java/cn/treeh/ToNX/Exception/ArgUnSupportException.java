@@ -1,6 +1,6 @@
-package cn.tobinsc.ToNX.Exception;
+package cn.treeh.ToNX.Exception;
 
-import cn.tobinsc.ToNX.O;
+import cn.treeh.ToNX.O;
 
 public class ArgUnSupportException extends Exception {
     Class<?> cls;

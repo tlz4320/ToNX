@@ -1,6 +1,6 @@
-package cn.tobinsc.ToNX.util;
+package cn.treeh.ToNX.util;
 
-import cn.tobinsc.ToNX.Exception.ArgUnSupportException;
+import cn.treeh.ToNX.Exception.ArgUnSupportException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -33,7 +33,7 @@ public final class ReflectionUtil {
         if(val == null)
             val = "";
         String type = cls.getTypeName();
-        if (type.equals("java.lang.String"))
+        if (type.equals("java.lang.String") || type.equals("String"))
             return val;
         String val2;
         if (val.length() == 0)
@@ -41,13 +41,16 @@ public final class ReflectionUtil {
         else
             val2 = val;
         try {
+
+            if(type.equals("java.lang.Character") || type.equals("char"))
+                return val2.charAt(0);
             if (type.equals("java.lang.Integer") || type.equals("int"))
                 return Integer.parseInt(val2);
             if (type.equals("java.lang.Double") || type.equals("double"))
                 return Double.parseDouble(val2);
             if (type.equals("java.lang.Float") || type.equals("float"))
                 return Float.parseFloat(val2);
-            if (type.equals("java.lang.Boolean"))
+            if (type.equals("java.lang.Boolean") || type.equals("boolean"))
                 return Boolean.parseBoolean(val2);
         }catch (Exception e){
             throw new ArgUnSupportException(cls, val);

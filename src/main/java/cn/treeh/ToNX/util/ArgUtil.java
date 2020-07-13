@@ -1,21 +1,21 @@
-package cn.tobinsc.ToNX.util;
+package cn.treeh.ToNX.util;
 
-import cn.tobinsc.ToNX.Annotation.Arg;
-import cn.tobinsc.ToNX.Exception.ArgNeededException;
-import cn.tobinsc.ToNX.Exception.ArgUnSupportException;
-import cn.tobinsc.ToNX.O;
+import cn.treeh.ToNX.Annotation.Arg;
+import cn.treeh.ToNX.Exception.ArgNeededException;
+import cn.treeh.ToNX.Exception.ArgUnSupportException;
 import org.apache.commons.cli.*;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cn.tobinsc.ToNX.util.ReflectionUtil.setField;
-import static cn.tobinsc.ToNX.util.ReflectionUtil.cast;
+import static cn.treeh.ToNX.util.ReflectionUtil.setField;
+import static cn.treeh.ToNX.util.ReflectionUtil.cast;
 
-public class ArgUtil {
+public abstract class ArgUtil {
     HashMap<Option, Field> Option_of_fields = new HashMap<>();
+    HashMap<ArgNeededException, Integer> unSatisfiedLevel = new HashMap<>();
+    int levels = 0;
     private Options options = new Options() {
         @Override
         public String toString() {
@@ -61,7 +61,7 @@ public class ArgUtil {
 
     private CommandLineParser parser = new DefaultParser();
 
-    public void parse(String[] argv, Object Configure, int level) {
+    public void _parse(String[] argv, Object Configure) {
         Field[] fields = Configure.getClass().getFields();
         Arg annotation;
         for (Field field : fields) {
@@ -90,8 +90,13 @@ public class ArgUtil {
                         continue;
                     }
                     arg = commandLine.getOptionValue(annotation.arg());
-                    if ((annotation.needed() || (annotation.level() & level) != 0) && arg == null)
+                    if (annotation.needed() && arg == null)
                         throw new ArgNeededException(annotation, field);
+                    if (annotation.level() != 0) {
+                        levels = (levels | annotation.level());
+                        if (arg == null)
+                            unSatisfiedLevel.put(new ArgNeededException(annotation, field), annotation.level());
+                    }
                     if (arg == null)
                         setField(Configure, field, cast(field.getType(), annotation.val()));
                     else
@@ -99,12 +104,12 @@ public class ArgUtil {
                 }
             }
         } catch (ArgUnSupportException e2) {
-            if(verbose > 0)
+            if (verbose > 0)
                 System.err.println(options.toString());
             e2.printStackTrace();
             throw new RuntimeException();
         } catch (ArgNeededException e3) {
-            if(verbose > 0)
+            if (verbose > 0)
                 System.err.println(options.toString());
             e3.printStackTrace();
             throw new RuntimeException();
@@ -112,10 +117,48 @@ public class ArgUtil {
             System.err.println(options.toString());
             throw new RuntimeException();
         }
+
     }
 
-    public void parse(String[] argv, Object Configure) {
-        parse(argv, Configure, Integer.MAX_VALUE);
+    public boolean parse(String[] argv, Object Configure) {
+        _parse(argv, Configure);
+        return check();
+    }
+    public boolean parse(String[] argv){
+        return parse(argv, this);
+    }
+    public boolean parse(String[] argv, Object Configure, int level) {
+        _parse(argv, Configure);
+        try {
+            for (Map.Entry<ArgNeededException, Integer> entry : unSatisfiedLevel.entrySet()) {
+                if ((entry.getValue() & level) != 0)
+                    throw entry.getKey();
+            }
+        } catch (ArgNeededException e3) {
+            if (verbose > 0)
+                System.err.println(options.toString());
+            e3.printStackTrace();
+            throw new RuntimeException();
+        }
+        return check();
     }
 
+    public int parseLevel(String[] argv, Object Configure) {
+        _parse(argv, Configure);
+        for (Map.Entry<ArgNeededException, Integer> entry : unSatisfiedLevel.entrySet())
+            levels = levels & (~entry.getValue());
+        return levels;
+    }
+
+    public boolean check() {
+        return true;
+    }
+
+
+    public String toString() {
+        if (options != null)
+            return options.toString();
+        else
+            return "";
+    }
 }
