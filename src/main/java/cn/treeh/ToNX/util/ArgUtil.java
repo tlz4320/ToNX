@@ -4,9 +4,11 @@ import cn.treeh.ToNX.Annotation.Arg;
 import cn.treeh.ToNX.Exception.ArgNeededException;
 import cn.treeh.ToNX.Exception.ArgUnSupportException;
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.stream.Streams;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static cn.treeh.ToNX.util.ReflectionUtil.setField;
@@ -59,7 +61,7 @@ public abstract class ArgUtil {
         options = ops;
     }
 
-    private CommandLineParser parser = new DefaultParser();
+    private DefaultParser parser = new DefaultParser();
 
     public void _parse(String[] argv, Object Configure) {
         Field[] fields = Configure.getClass().getFields();
@@ -71,6 +73,7 @@ public abstract class ArgUtil {
                         annotation.longarg().length() == 0 ? annotation.arg() : annotation.longarg(),
                         annotation.hasArg(),
                         annotation.description());
+                option.setArgs(Integer.MAX_VALUE);
                 option.setRequired(annotation.needed());
                 Option_of_fields.put(option, field);
                 options.addOption(option);
@@ -78,7 +81,7 @@ public abstract class ArgUtil {
         }
         try {
             CommandLine commandLine = parser.parse(options, argv);
-            String arg;
+            String[] arg;
             for (Field field : fields) {
                 if (field.isAnnotationPresent(Arg.class)) {
                     annotation = field.getAnnotation(Arg.class);
@@ -89,7 +92,7 @@ public abstract class ArgUtil {
                             setField(Configure, field, cast(field.getType(), "false"));
                         continue;
                     }
-                    arg = commandLine.getOptionValue(annotation.arg());
+                    arg = commandLine.getOptionValues(annotation.arg());
                     if (annotation.needed() && arg == null)
                         throw new ArgNeededException(annotation, field);
                     if (annotation.level() != 0) {
@@ -107,15 +110,15 @@ public abstract class ArgUtil {
             if (verbose > 0)
                 System.err.println(options.toString());
             e2.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException(e2);
         } catch (ArgNeededException e3) {
             if (verbose > 0)
                 System.err.println(options.toString());
             e3.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException(e3);
         } catch (Exception e) {
             System.err.println(options.toString());
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
     }
@@ -142,11 +145,13 @@ public abstract class ArgUtil {
         }
         return check();
     }
-
+    public int parseLevel(String[] argv){
+        return parseLevel(argv, this);
+    }
     public int parseLevel(String[] argv, Object Configure) {
         _parse(argv, Configure);
         for (Map.Entry<ArgNeededException, Integer> entry : unSatisfiedLevel.entrySet())
-            levels = levels & (~entry.getValue());
+            levels = levels & (int)(~entry.getValue());
         return levels;
     }
 
@@ -156,9 +161,31 @@ public abstract class ArgUtil {
 
 
     public String toString() {
-        if (options != null)
-            return options.toString();
-        else
-            return "";
+        Field[] fields = this.getClass().getFields();
+        Arg annotation;
+        StringBuilder stringBuilder = new StringBuilder("Param list:\n");
+        try {
+            int maxLen = 0;
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(Arg.class)) {
+                    if(field.getAnnotation(Arg.class).show())
+                        maxLen = Math.max(maxLen, field.getName().length());
+                }
+            }
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(Arg.class)) {
+                    if(field.getAnnotation(Arg.class).show()){
+                        stringBuilder.append(String.format("%1$"+maxLen+ "s", field.getName())).append("\t:\t").append(field.get(this).toString()).append("\n");
+                    }
+                }
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+    public String toHelpString(){
+        return options.toString();
     }
 }

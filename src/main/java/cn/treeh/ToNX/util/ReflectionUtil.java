@@ -12,7 +12,7 @@ public final class ReflectionUtil {
     public static Object newInstance(Class<?> cls){
         Object instance;
         try{
-            instance = cls.newInstance();
+            instance = cls.getDeclaredConstructor().newInstance();
         }catch(Exception e){
             throw new RuntimeException(e);
         }
@@ -28,13 +28,25 @@ public final class ReflectionUtil {
         }
         return result;
     }
+    public static Object cast(Class<?> cls, String[] val) throws ArgUnSupportException {
+        if(cls.getTypeName().equals("java.lang.String[]") || cls.getTypeName().equals("String[]"))
+            return val;
+        else {
+            if(val.length < 1)
+                return cast(cls, "");
+            return cast(cls, val[0]);
+        }
+    }
+
+
+
     // only support int double float
     public static Object cast(Class<?> cls, String val) throws ArgUnSupportException {
         if(val == null)
             val = "";
         String type = cls.getTypeName();
         if (type.equals("java.lang.String") || type.equals("String"))
-            return val;
+            return val.replaceAll("\n", " ");
         String val2;
         if (val.length() == 0)
             val2 = "0";

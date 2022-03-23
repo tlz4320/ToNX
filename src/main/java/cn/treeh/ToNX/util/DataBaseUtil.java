@@ -1,11 +1,9 @@
 package cn.treeh.ToNX.util;
 
-import cn.treeh.ToNX.Annotation.Arg;
+
 import cn.treeh.ToNX.Annotation.DBField;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
@@ -17,11 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
-
-import org.sqlite.JDBC;
 
 import javax.swing.*;
 

@@ -1,6 +1,8 @@
 package cn.treeh.ToNX.util;
 
 
+import cn.treeh.ToNX.E;
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import java.util.Properties;
  */
 public class PropsUtil {
     public static void saveProps(Properties properties, String filename){
-
         try {
             FileWriter writer = new FileWriter(filename);
             if(properties == null || properties.size() == 0) {
@@ -39,7 +40,8 @@ public class PropsUtil {
         try{
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
             if(is==null){
-                throw new FileNotFoundException(filename+"not found");
+                E.ptln(filename+" not found");
+                return new Properties();
             }
             properties = new Properties();
             properties.load(is);

@@ -15,4 +15,5 @@ public @interface Arg {
     String longarg() default "";
     String val() default "";
     String description() default "";
+    boolean show() default true;
 }
