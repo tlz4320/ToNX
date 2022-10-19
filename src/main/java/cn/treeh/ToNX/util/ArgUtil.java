@@ -73,7 +73,8 @@ public abstract class ArgUtil {
                         annotation.longarg().length() == 0 ? annotation.arg() : annotation.longarg(),
                         annotation.hasArg(),
                         annotation.description());
-                option.setArgs(Integer.MAX_VALUE);
+                if(annotation.hasArg())
+                    option.setArgs(-2);
                 option.setRequired(annotation.needed());
                 Option_of_fields.put(option, field);
                 options.addOption(option);

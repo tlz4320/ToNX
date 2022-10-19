@@ -1,17 +1,17 @@
 package cn.treeh.ToNX.ClassLoader.TURL;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class MemoryJarURL {
     private class LoadMemoryHandler extends URLStreamHandler {
@@ -89,16 +89,14 @@ public class MemoryJarURL {
         try {
             URL url = new URL("memory", "", -1, path, handler);
             contents.put(url, data);
-            ZipArchiveInputStream zip = new ZipArchiveInputStream(
-                    new ByteArrayInputStream(data));
-            ZipArchiveEntry entry;
-            ByteArrayOutputStream tmp = new ByteArrayOutputStream(100000);
-            while((entry = zip.getNextZipEntry()) != null){
+            ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(data));
+            ZipEntry entry;
+            byte[] tmp;
+            while((entry = zip.getNextEntry()) != null){
                 if(entry.isDirectory())
                     continue;
-                IOUtils.copy(zip, tmp);
-                contents.put(new URL(url, entry.getName()), Arrays.copyOf(tmp.toByteArray(), tmp.size()));
-                tmp.reset();
+                tmp = zip.readAllBytes();
+                contents.put(new URL(url, entry.getName()), tmp);
             }
             return url;
         } catch (MalformedURLException ex) {

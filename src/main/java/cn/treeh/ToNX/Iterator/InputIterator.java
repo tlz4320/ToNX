@@ -13,5 +13,6 @@ public interface InputIterator extends Iterator<String[]> {
     public boolean hasNext();
     @Override
     public String[] next();
+    public String readLine();
     public void close() throws IOException;
 }

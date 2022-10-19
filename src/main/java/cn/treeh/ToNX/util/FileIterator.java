@@ -7,9 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class FileIterator implements Iterator{
     private static final Logger LOGGER = LoggerFactory.getLogger(FileIterator.class);

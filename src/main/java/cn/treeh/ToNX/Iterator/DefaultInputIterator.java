@@ -16,6 +16,12 @@ public abstract class DefaultInputIterator implements InputIterator{
     public String getThisLine() {
         return thisLine;
     }
+    public String readLine(){
+        if(!hasNext())
+            return null;
+        next();
+        return thisLine;
+    }
     public void open(String file, String s, int cols) throws IOException{
         this.file = file;
         sep = s;
