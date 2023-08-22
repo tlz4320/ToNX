@@ -70,7 +70,7 @@ public abstract class ArgUtil {
             if (field.isAnnotationPresent(Arg.class)) {
                 annotation = field.getAnnotation(Arg.class);
                 Option option = new Option(annotation.arg(),
-                        annotation.longarg().length() == 0 ? annotation.arg() : annotation.longarg(),
+                        annotation.longarg().isEmpty() ? annotation.arg() : annotation.longarg(),
                         annotation.hasArg(),
                         annotation.description());
                 if(annotation.hasArg())

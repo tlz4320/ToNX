@@ -48,12 +48,11 @@ public final class ReflectionUtil {
         if (type.equals("java.lang.String") || type.equals("String"))
             return val.replaceAll("\n", " ");
         String val2;
-        if (val.length() == 0)
+        if (val.isEmpty())
             val2 = "0";
         else
             val2 = val;
         try {
-
             if(type.equals("java.lang.Character") || type.equals("char"))
                 return val2.charAt(0);
             if (type.equals("java.lang.Integer") || type.equals("int"))
