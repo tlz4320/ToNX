@@ -51,17 +51,22 @@ ArgUtil is designed for make java program can decode the arguments automatically
 #### Example
 
 ```java
-public class MyParameter{
-    @Arg(arg="a", needed = true, hasArg = true, val = "1")//default value = 1
-    int par_1;//-a
-    @Arg(arg="b", hasArg = true, level = 1)//level = 1
-    int par_2;//-b
-    @Arg(arg="c", longarg="cc", hasArg = false, description = "this is par_3")//also longarg is support
-    double par_3;//-c | -cc
-    static public void main(String argv[]){
+import cn.treeh.ToNX.O;
+import cn.treeh.ToNX.util.ArgUtil;
+
+public class MyParameter extends ArgUtil {
+    @Arg(arg = "a", needed = true, hasArg = true, val = "1")//default value = 1
+    public int par_1;//-a
+    @Arg(arg = "b", hasArg = true, level = 1)//level = 1
+    public int par_2;//-b
+    @Arg(arg = "c", longarg = "cc", hasArg = false, description = "this is par_3")//also longarg is support
+    public double par_3;//-c | --cc
+
+    static public void main(String[] argv) {
         MyParameter mp = new MyParameter();
-        ArgUtil argUtil = new ArgUtil();
-        argUtil.parse(argv, mp, 1);//1 means fields which level=1 are needed
+        O.ptln(mp.toHelpString());//print autogenerate help
+        mp.parse(argv, 1);//1 means fields which level=1 are needed
+        O.ptln(mp.toString()); //print total parameters list
         O.ptln(mp.par_2);
     }
 }
