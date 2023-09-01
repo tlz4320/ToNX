@@ -102,7 +102,7 @@ public abstract class ArgUtil {
                             unSatisfiedLevel.put(new ArgNeededException(annotation, field), annotation.level());
                     }
                     if (arg == null)
-                        setField(Configure, field, cast(field.getType(), annotation.val()));
+                        setField(Configure, field, cast(field.getType(), annotation.val().split(" ")));
                     else
                         setField(Configure, field, cast(field.getType(), arg));
                 }

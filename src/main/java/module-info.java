@@ -8,12 +8,12 @@ module ToNX {
     requires com.google.common;
     requires org.slf4j;
     exports cn.treeh.ToNX;
-    exports cn.treeh.ToNX.ClassLoader;
+    //exports cn.treeh.ToNX.ClassLoader;
     exports cn.treeh.ToNX.util;
     exports cn.treeh.ToNX.Handler;
     exports cn.treeh.ToNX.Annotation;
     exports cn.treeh.ToNX.Exception;
     exports cn.treeh.ToNX.Iterable;
     exports cn.treeh.ToNX.Iterator;
-    exports cn.treeh.ToNX.ClassLoader.TURL;
+    //exports cn.treeh.ToNX.ClassLoader.TURL;
 }
