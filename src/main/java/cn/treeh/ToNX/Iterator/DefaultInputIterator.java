@@ -33,7 +33,7 @@ public abstract class DefaultInputIterator implements InputIterator{
     }
     @Override
     public boolean hasNext() {
-        String line = "";
+        String line = null;
         try {
             if (formerLine != null)
                 return true;
@@ -49,7 +49,7 @@ public abstract class DefaultInputIterator implements InputIterator{
             if (cols > 0 && formerLine.length > 1)
                 throw new FormatException(file, line, "cols of file is not equal to cols you need!");
             thisLine = line;
-            return line.length() != 0;
+            return true;
             //这里就意味着不需要列检查 只有当line自身是空的时候是错的
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -18,13 +18,22 @@ public class StringUtil {
     public static String[] splitString(String str,String regex){
         return str.split(regex);
     }
-    public static String paste(String[] sp, String collapse){
-        if(sp.length < 1)
+    /**
+     * [start, end)
+     */
+    public static String paste(String[] sp, String collapse, int start, int end){
+        if(sp.length <= start || start < 0 || end < start || sp.length < end)
             return "";
-        StringBuilder builder = new StringBuilder(sp[0]);
-        for(int index = 1; index < sp.length; index++){
+        StringBuilder builder = new StringBuilder(sp[start]);
+        for(int index = start + 1; index < end; index++){
             builder.append(collapse).append(sp[index]);
         }
         return builder.toString();
+    }
+    public static String paste(String[] sp, String collapse){
+        return paste(sp, collapse, 0, sp.length);
+    }
+    public static String paste(String[] sp, String collapse, int start){
+        return paste(sp, collapse, start, sp.length);
     }
 }
