@@ -1,7 +1,6 @@
 package cn.treeh.ToNX.Iterator;
 
 import cn.treeh.ToNX.Exception.FormatException;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,6 +30,19 @@ public abstract class DefaultInputIterator implements InputIterator{
     public DefaultInputIterator(String file, String s, int cols) throws IOException {
         this.open(file, s, cols);
     }
+
+    @Override
+    public boolean reset() {
+        try {
+            if(reader.ready())
+                reader.close();
+            reader = new BufferedReader(new FileReader(file));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     @Override
     public boolean hasNext() {
         String line = null;

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public interface InputIterator extends Iterator<String[]> {
+    public boolean reset();
     public String getThisLine();
     @Override
     public boolean hasNext();

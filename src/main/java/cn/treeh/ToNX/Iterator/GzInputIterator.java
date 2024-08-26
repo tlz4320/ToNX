@@ -4,6 +4,18 @@ import java.io.*;
 import java.util.zip.GZIPInputStream;
 
 public class GzInputIterator extends DefaultInputIterator{
+    @Override
+    public boolean reset(){
+        try {
+            if(reader.ready())
+                reader.close();
+            reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 
     @Override
     public void open(String file, String s, int cols) throws IOException {
